@@ -7,10 +7,10 @@ import (
 )
 
 // CreateRouter 创建路由
-func CreateRouter() *gin.Engine {
+func CreateRouter(prefixPath string) *gin.Engine {
 	router := gin.Default()
 
-	v1 := router.Group("/api/v1")
+	v1 := router.Group(prefixPath + "/v1")
 	{
 		v1.GET("/ping", api.Ping)
 		v1.GET("/user", api.User)

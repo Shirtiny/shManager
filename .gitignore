@@ -1,6 +1,12 @@
 .vscode
 .env.local
 
-/tmp
+tmp/*
+
+main
+main.exe
+
+*.zip
+*.tar
 
 go.sum
