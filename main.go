@@ -7,6 +7,9 @@ import (
 	"net/http"
 	"shManager/model"
 	"shManager/server"
+	"strconv"
+
+	"github.com/joho/godotenv"
 
 	"github.com/gin-gonic/gin"
 	serverlessplus "github.com/serverlessplus/go"
@@ -14,7 +17,8 @@ import (
 )
 
 const (
-	dev = false
+	dev        = false
+	portNumber = 2021
 )
 
 var handler *serverlessplus.Handler
@@ -38,16 +42,20 @@ func entry(ctx context.Context, req *serverlessplus.APIGatewayRequest) (*serverl
 }
 
 func main() {
+	// 读取环境变量
+	godotenv.Load()
+
 	model.ConnectDatabase()
+
 	router := server.CreateRouter("/shManager")
+
 	if dev {
-		router.Run(":" + "2021")
+		router.Run(":" + strconv.Itoa(portNumber))
 	} else {
 		// start your server
-		serverlessInit(router, 2021)
+		serverlessInit(router, portNumber)
 		cloudfunction.Start(entry)
 	}
-
 }
 
 // GOOS=linux GOARCH=amd64 go build -o main main.go
