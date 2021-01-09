@@ -10,11 +10,6 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
-type User struct {
-	gorm.Model
-	Name string
-}
-
 // DB 数据库连接单例
 var DB *gorm.DB
 

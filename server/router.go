@@ -13,7 +13,12 @@ func CreateRouter(prefixPath string) *gin.Engine {
 	v1 := router.Group(prefixPath + "/v1")
 	{
 		v1.GET("/ping", api.Ping)
-		v1.GET("/user", api.User)
+
+		user := v1.Group("/user")
+		{
+			user.GET("", api.GetUser)
+			user.POST("", api.UserSignUp)
+		}
 	}
 
 	return router
