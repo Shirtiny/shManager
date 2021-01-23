@@ -28,7 +28,7 @@ func NewUserSignService() UserSignService {
 }
 
 //用户注册
-func (service userSignServiceImpl) SignUp(name string, password string, nickname string) (serializer.User, error) {
+func (service *userSignServiceImpl) SignUp(name string, password string, nickname string) (serializer.User, error) {
 	// 加密用户密码
 	pwdBytes, err := bcrypt.GenerateFromPassword([]byte(password), service.passWordCost)
 	if err != nil {
