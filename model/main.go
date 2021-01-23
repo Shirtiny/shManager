@@ -14,8 +14,8 @@ import (
 var DB *gorm.DB
 
 // ConnectDatabase 连接数据库
-func ConnectDatabase() {
-	db, err := gorm.Open("mysql", "lab_1591053723:50c712fa6981_#@Aa@tcp(rm-bp1oo27t8762xhlob0o.mysql.rds.aliyuncs.com:3306)/shmysql?charset=utf8&parseTime=True&loc=UTC")
+func ConnectDatabase(dsn string) {
+	db, err := gorm.Open("mysql", dsn)
 	if err != nil {
 		fmt.Println("数据库连接失败", err)
 		panic(err)

@@ -5,11 +5,9 @@ import (
 	"fmt"
 	"net"
 	"net/http"
-	"shManager/model"
+	"shManager/conf"
 	"shManager/server"
 	"strconv"
-
-	"github.com/joho/godotenv"
 
 	"github.com/gin-gonic/gin"
 	serverlessplus "github.com/serverlessplus/go"
@@ -17,7 +15,7 @@ import (
 )
 
 const (
-	dev        = false
+	dev        = true
 	portNumber = 2021
 )
 
@@ -42,10 +40,8 @@ func entry(ctx context.Context, req *serverlessplus.APIGatewayRequest) (*serverl
 }
 
 func main() {
-	// 读取环境变量
-	godotenv.Load()
-
-	model.ConnectDatabase()
+	// 初始化配置 和 必须的前置工作
+	conf.Init()
 
 	router := server.CreateRouter("/shManager")
 
