@@ -2,6 +2,7 @@
 .env.local
 
 tmp/*
+!tmp/.gitkeep
 
 main
 main.exe
