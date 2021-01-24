@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	dev        = true
+	dev        = false
 	portNumber = 2021
 )
 

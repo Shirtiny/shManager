@@ -2,6 +2,7 @@ package api
 
 import (
 	"fmt"
+	"shManager/auth"
 	"shManager/model"
 	"shManager/serializer"
 	"shManager/service"
@@ -18,11 +19,13 @@ func init() {
 
 // GetUser 获取用户
 func GetUser(c *gin.Context) {
-	var user model.User
-
-	model.DB.First(&user)
-	fmt.Println(user)
-	c.JSON(200, user)
+	token := c.Request.Header.Get("token")
+	claims := auth.ParseJwt(token)
+	c.JSON(200, serializer.Response{
+		Code: 0,
+		Msg: "ok",
+		Data: claims,
+	})
 }
 
 // UserSignUp 用户注册
@@ -43,4 +46,15 @@ func UserSignUp(c *gin.Context) {
 			Data: createdUser,
 		})
 	}
+}
+
+// UserLogin 用户登陆
+func UserLogin(c *gin.Context) {
+	jwt := auth.CreateJwt()
+	fmt.Println("创建jwt", jwt)
+	c.JSON(200, serializer.Response{
+		Code: 0,
+		Msg: "ok",
+		Data: jwt,
+	})
 }

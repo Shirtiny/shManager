@@ -16,8 +16,9 @@ func CreateRouter(prefixPath string) *gin.Engine {
 
 		user := v1.Group("/user")
 		{
-			user.GET("", api.GetUser)
 			user.POST("", api.UserSignUp)
+			user.POST("/login", api.UserLogin)
+			user.GET("/info", api.GetUser)
 		}
 	}
 

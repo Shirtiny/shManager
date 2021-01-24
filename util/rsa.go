@@ -75,17 +75,31 @@ func RsaGenerateKeyBytes() ([]byte, []byte) {
 	return privateKeyBytes, publicKeyBytes
 }
 
+// LoadRSAPrivateKeyFromBytes 从字符串解析私钥
+func LoadRSAPrivateKeyFromBytes(keyData []byte) *rsa.PrivateKey {
+	key, e := jwt.ParseRSAPrivateKeyFromPEM(keyData)
+	if e != nil {
+		panic(e.Error())
+	}
+	return key
+}
+
+// LoadRSAPublicKeyFromBytes 从字符串解析公钥
+func LoadRSAPublicKeyFromBytes(keyData []byte) *rsa.PublicKey {
+	key, e := jwt.ParseRSAPublicKeyFromPEM(keyData)
+	if e != nil {
+		panic(e.Error())
+	}
+	return key
+}
+
 // LoadRSAPrivateKeyFromDisk 从文件载入私钥
 func LoadRSAPrivateKeyFromDisk(location string) *rsa.PrivateKey {
 	keyData, e := ioutil.ReadFile(location)
 	if e != nil {
 		panic(e.Error())
 	}
-	key, e := jwt.ParseRSAPrivateKeyFromPEM(keyData)
-	if e != nil {
-		panic(e.Error())
-	}
-	return key
+	return LoadRSAPrivateKeyFromBytes(keyData)
 }
 
 // LoadRSAPublicKeyFromDisk 从文件载入公钥
@@ -94,11 +108,7 @@ func LoadRSAPublicKeyFromDisk(location string) *rsa.PublicKey {
 	if e != nil {
 		panic(e.Error())
 	}
-	key, e := jwt.ParseRSAPublicKeyFromPEM(keyData)
-	if e != nil {
-		panic(e.Error())
-	}
-	return key
+	return LoadRSAPublicKeyFromBytes(keyData)
 }
 
 // RsaSignWithSha256 签名 测试用

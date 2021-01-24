@@ -31,5 +31,6 @@ func ConnectDatabase(dsn string) {
 	DB = db
 
 	// 自动迁移模式
+	DB.AutoMigrate(&Key{})
 	DB.AutoMigrate(&User{})
 }
