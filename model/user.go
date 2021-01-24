@@ -23,3 +23,10 @@ func UserAdd(user User) error {
 	}
 	return nil
 }
+
+// UserGet 查询用户
+func UserGet(user User) (User, error) {
+	result := User{}
+	err := DB.Where(&user).First(&result).Error
+	return result, err
+}

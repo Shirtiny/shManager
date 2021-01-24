@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"shManager/auth"
 	"shManager/model"
 	"shManager/serializer"
 	"strings"
@@ -12,6 +13,7 @@ import (
 // UserSignService 用户注册、登陆服务的接口
 type UserSignService interface {
 	SignUp(name string, password string, nickname string) (serializer.User, error)
+	SignIn(name string, password string) (string, error)
 }
 
 // userSignServiceImpl 用户注册、登陆的实现类
@@ -48,4 +50,26 @@ func (service *userSignServiceImpl) SignUp(name string, password string, nicknam
 		return serializer.User{}, dbErr
 	}
 	return serializer.BuildUser(user), nil
+}
+
+// 用户登陆
+func (service *userSignServiceImpl) SignIn(name, password string) (string, error) {
+	// 根据用户名查询用户
+	user, err := model.UserGet(model.User{
+		Name: name,
+	})
+	if err != nil {
+		return "", err
+	}
+	// 校验密码
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	if err != nil {
+		return "", err
+	}
+	// 生成jwt
+	jwt, err := auth.CreateJwt(serializer.BuildUser(user))
+	if err != nil {
+		return "", err
+	}
+	return jwt, nil
 }

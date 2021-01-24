@@ -20,10 +20,18 @@ func init() {
 // GetUser 获取用户
 func GetUser(c *gin.Context) {
 	token := c.Request.Header.Get("token")
-	claims := auth.ParseJwt(token)
+	claims, err := auth.ParseJwt(token)
+	if err != nil {
+		c.JSON(200, serializer.Response{
+			Code: 1,
+			Msg:  "token无效或过期",
+			Data: nil,
+		})
+		return
+	}
 	c.JSON(200, serializer.Response{
 		Code: 0,
-		Msg: "ok",
+		Msg:  "ok",
 		Data: claims,
 	})
 }
@@ -50,11 +58,20 @@ func UserSignUp(c *gin.Context) {
 
 // UserLogin 用户登陆
 func UserLogin(c *gin.Context) {
-	jwt := auth.CreateJwt()
-	fmt.Println("创建jwt", jwt)
+	user := model.User{}
+	c.ShouldBind(&user)
+	token, err := userSignService.SignIn(user.Name, user.Password)
+	if err != nil {
+		c.JSON(200, serializer.Response{
+			Code: 1,
+			Msg:  "用户名或密码错误",
+			Data: nil,
+		})
+		return
+	}
 	c.JSON(200, serializer.Response{
 		Code: 0,
-		Msg: "ok",
-		Data: jwt,
+		Msg:  "ok",
+		Data: token,
 	})
 }

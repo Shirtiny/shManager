@@ -3,15 +3,21 @@ package auth
 import (
 	"crypto/rsa"
 	"fmt"
+	"shManager/serializer"
 	"shManager/util"
 
 	"github.com/dgrijalva/jwt-go"
 )
 
+const (
+	// jwt多少秒后过期
+	timeout = 3600
+)
+
 // Claims 自定jwt载体
 type Claims struct {
 	jwt.StandardClaims
-	Foo string `json:"foo"`
+	serializer.User
 }
 
 // RsaKey rsa密钥对bytes
@@ -40,30 +46,34 @@ func InitRsaByFile(privateKeyFilePath, publicKeyFilePath string) {
 }
 
 // CreateJwt 创建jwt SigningMethodRS256
-func CreateJwt() string {
+func CreateJwt(user serializer.User) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, Claims{
-		Foo: "my Foo",
+		User: user,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: jwt.TimeFunc().Unix() + 60,
+			ExpiresAt: jwt.TimeFunc().Unix() + timeout,
 			Issuer:    "test",
 		},
 	})
-	ss, err := token.SignedString(Rsa.PrivateKey)
-	fmt.Printf("生成jwt： %v %v", ss, err)
-	return ss
+	jwt, err := token.SignedString(Rsa.PrivateKey)
+	if err != nil {
+		return "", err
+	}
+	return jwt, err
 }
 
 // ParseJwt 解析jwt RS
-func ParseJwt(tokenString string) *Claims {
+func ParseJwt(tokenString string) (*Claims, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
 		return Rsa.PublicKey, nil
 	})
-	claims, ok := token.Claims.(*Claims)
-
-	if ok && token.Valid {
-		fmt.Printf("解析jwt：%+v", claims)
-		return claims
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
 	}
-	fmt.Println(err)
-	return claims
+	claims, ok := token.Claims.(*Claims)
+	if !ok || !token.Valid {
+		fmt.Printf("解析jwt：%+v", claims)
+		return nil, err
+	}
+	return claims, nil
 }
